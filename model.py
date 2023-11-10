@@ -11,24 +11,26 @@ class Encoder(nn.Module):
         self.conv1 = GCNConv(
             input_dim, config['model']['latent_dim'] * 2, cached=True
         )
-        self.conv2 = GCNConv(
-            config['model']['latent_dim'] * 2, 
+        self.conv_mu = GCNConv(
+            config['model']['latent_dim'] * 2,
             config['model']['latent_dim'], cached=True
         )
-        self.linear_mu = torch.nn.Linear(
-            config['model']['latent_dim'], config['model']['latent_dim']
+        self.conv_logvar = GCNConv(
+            config['model']['latent_dim'] * 2,
+            config['model']['latent_dim'], cached=True
         )
-        self.linear_logvar = torch.nn.Linear(
-            config['model']['latent_dim'], config['model']['latent_dim']
-        )
+        self.dropout = nn.Dropout(config['model']['dropout_rate'])
+
+        nn.init.xavier_uniform_(self.conv1.lin.weight)
+        nn.init.xavier_uniform_(self.conv_mu.lin.weight)
+        nn.init.xavier_uniform_(self.conv_logvar.lin.weight)
     
     def forward(self, x, edge_index):
         z = self.conv1(x, edge_index)
         z = F.relu(z)
-        z = self.conv2(z, edge_index)
-
-        mu = self.linear_mu(z)
-        logvar = self.linear_logvar(z)
+        z = self.dropout(z)
+        mu = self.conv_mu(z, edge_index)
+        logvar = self.conv_logvar(z, edge_index)
 
         return mu, logvar
 

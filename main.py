@@ -1,6 +1,7 @@
 import torch
 import torch.optim as optim
 from torch_geometric.datasets import Planetoid
+from torch_geometric.datasets import KarateClub
 
 from config import load_config
 from model import GraphVAE
@@ -15,7 +16,8 @@ if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     config['device'] = device
 
-    dataset = Planetoid(root='/tmp/Cora', name='Cora')
+    #dataset = Planetoid(root='/tmp/Cora', name='Cora')
+    dataset = KarateClub()
     data = dataset[0]
 
     model = GraphVAE(config, input_dim=dataset.num_features)

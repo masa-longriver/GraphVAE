@@ -1,11 +1,12 @@
 config = {
     'seed': 25,
     'train': {
-        'epochs': 1000,
+        'epochs': 200,
         'patience': 50
     },
     'model': {
-        'latent_dim': 32
+        'latent_dim': 16,
+        'dropout_rate': 0.5
     },
     'optim': {
         'lr': 0.01,
